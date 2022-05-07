@@ -330,7 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedForward: 5
   speedRight: 5
-  speedJump: 10
+  speedJump: 23.6
   rb: {fileID: 318851591}
 --- !u!114 &318851589
 MonoBehaviour:

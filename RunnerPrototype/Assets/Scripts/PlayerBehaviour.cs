@@ -19,8 +19,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     }
     protected void Jump()
-    {
-        rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
+    {        
+        if (rb.velocity.y == 0)
+        {
+            rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
+        }
     }
 
     protected void Moving()
@@ -30,13 +33,6 @@ public class PlayerBehaviour : MonoBehaviour
         rb.MovePosition(rb.position + movingForward + movingHorizontal);
     }
 
-    protected void Death()
-    {
-        if (transform.position.y < 0.25f)
-        {
-
-        }
-    }
 
 
 
