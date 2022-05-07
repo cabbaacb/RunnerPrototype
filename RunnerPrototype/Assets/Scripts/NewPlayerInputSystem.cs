@@ -2,17 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewPlayerInputSystem : MonoBehaviour
+public class NewPlayerInputSystem : PlayerBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private MovingControls movingcontrols;
+
+    private void Awake()
     {
-        
+        movingcontrols = new MovingControls();
+
+        movingcontrols.Player.Jumping.performed += _ => Jump();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        
+        horizontalInput = movingcontrols.Player.Moving.ReadValue<float>();
+        Moving();
     }
+
+    private void OnEnable()
+    {
+        movingcontrols.Enable();
+    }
+
+    private void OnDisable()
+    {
+        movingcontrols.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        movingcontrols.Dispose();
+    }
+
 }
