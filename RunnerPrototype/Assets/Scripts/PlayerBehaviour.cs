@@ -9,18 +9,44 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] [Range(1f, 25f)] private float speedRight = 5f;
     [SerializeField] [Range(5f, 50f)] private float speedJump = 10f;
 
+   
+
     [SerializeField] private Rigidbody rb;
 
     protected float horizontalInput;
+    protected bool isGrounded;
+
+    private float myHealth = 100f;
+
+    [Min(1f)] public float health;
+    [Min(5f)] public float maxHealth;
+    public HealthBarScript healthBar;
+
+
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
 
+        health = myHealth;
+        maxHealth = health;
+
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 1)
+            isGrounded = true;
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == 1)
+            isGrounded = false;
     }
     protected void Jump()
-    {        
-        if (rb.velocity.y == 0)
+    {      
+        //OnCollisionStay()
+        if(isGrounded)
         {
             rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
         }
@@ -31,6 +57,22 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3 movingForward = transform.forward * speedForward * Time.fixedDeltaTime;
         Vector3 movingHorizontal = transform.right * horizontalInput * speedRight * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movingForward + movingHorizontal);
+        FallingDown();
+    }
+
+
+
+    private void SetDamage(float damage)
+    {
+        myHealth -= damage;
+        health -= damage;
+        healthBar.UpdateHealthBar();
+        
+    }
+
+    private void FallingDown()
+    {
+        if (transform.position.y <= -0.5f) SetDamage(150f);
     }
 
 
