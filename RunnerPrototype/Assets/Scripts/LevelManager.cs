@@ -5,12 +5,11 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private GameObject _groundTile;
+    [SerializeField] private GameObject _walls;
 
     [Tooltip("This determines how wide our road will be")]
-    [SerializeField] private int _numberOfLines = 5;
-    [Tooltip("The bigger the number, the less holes will be")]
-    [SerializeField] private int _holesSpawnRate = 5;
-    [Tooltip("The bigger the number, the less objects will appear")]
+    private int _numberOfLines = 5;
+    [Tooltip("The bigger the number, the less objects will be")]
     [SerializeField] private int _objectsSpawnRate = 5;
 
     private Vector3 _spawnRow;
@@ -28,7 +27,7 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        _arrayOfRoadObjects = new int[5, 3];
+        _arrayOfRoadObjects = new int[5, 2];
         for (int i = 0; i < 10; i++)
         {
             SpawnRow();
@@ -41,7 +40,7 @@ public class LevelManager : MonoBehaviour
         {
             for (int k = 0; k < _arrayOfRoadObjects.GetLength(1); k++)
             {
-                int value = Random.Range(0, _holesSpawnRate);
+                int value = Random.Range(0, _objectsSpawnRate);
                 _arrayOfRoadObjects.SetValue(value, i, k);
             }
         }
@@ -51,6 +50,7 @@ public class LevelManager : MonoBehaviour
     {
         DetermineRow();
         Vector3 spawnPoint = _spawnRow;
+        Instantiate(_walls, spawnPoint, Quaternion.identity, gameObject.transform);
         for (int i = 0; i < _numberOfLines; i++)
         {
             if (i == 0)
@@ -80,6 +80,10 @@ public class LevelManager : MonoBehaviour
         if (_arrayOfRoadObjects[numberInRow, 1] == 1)
         {
             tile.transform.GetChild(4).gameObject.SetActive(true);
+        }
+        else if (_arrayOfRoadObjects[numberInRow, 1] == 2)
+        {
+            tile.transform.GetChild(5).gameObject.SetActive(true);
         }
 
         if (setNextRow) //this is needed to determine next row spawn start position

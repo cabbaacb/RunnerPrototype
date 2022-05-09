@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerBehaviour : MonoBehaviour
 {
-    [SerializeField] [Range(1f, 1000f)] private float speedForward = 5f;
+    [SerializeField] [Range(0f, 1000f)] private float speedForward = 5f;
     [SerializeField] [Range(1f, 25f)] private float speedRight = 5f;
     [SerializeField] [Range(5f, 50f)] private float speedJump = 10f;
 
@@ -20,9 +21,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     [Min(1f)] public float health;
     [Min(5f)] public float maxHealth;
-    public HealthBarScript healthBar;
+    [SerializeField] private HealthBarScript healthBar;
 
-
+    [SerializeField] private int _count;
+    [SerializeField] private Text _counter;
+    private GameObject _previousCountObject;
 
     private void Awake()
     {
@@ -30,19 +33,48 @@ public class PlayerBehaviour : MonoBehaviour
 
         health = myHealth;
         maxHealth = health;
-
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 1)
+        if (collision.gameObject.layer == 8)
             isGrounded = true;
     }
+
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.layer == 1)
+        if (collision.gameObject.layer == 8)
             isGrounded = false;
     }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.layer == 9)
+        {
+            SetDamage(10);
+        }
+    }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.layer == 10)
+        {
+            if (_previousCountObject == null)
+            {
+                _previousCountObject = collision.gameObject;
+            }
+            else
+            {
+                if (_previousCountObject.transform.position.z < collision.gameObject.transform.position.z)
+                {
+                    _previousCountObject = collision.gameObject;
+                    _count++;
+                    _counter.text = "Count: " + _count;
+                }
+            }
+        }
+    }
+
     protected void Jump()
     {      
         //OnCollisionStay()
@@ -67,13 +99,13 @@ public class PlayerBehaviour : MonoBehaviour
         myHealth -= damage;
         health -= damage;
         healthBar.UpdateHealthBar();
-        
     }
 
     private void FallingDown()
     {
-        if (transform.position.y <= -0.5f) SetDamage(150f);
+        if (transform.position.y <= -0.5f) SetDamage(1);
     }
+
 
 
 
