@@ -15,17 +15,22 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private Rigidbody rb;
 
     protected float horizontalInput;
-    protected bool isGrounded;
+    //protected int isGrounded;
+
+    
 
     private float myHealth = 100f;
 
     [Min(1f)] public float health;
     [Min(5f)] public float maxHealth;
     [SerializeField] private HealthBarScript healthBar;
+    [SerializeField] private JumpCHecker jumpChecker;
 
     [SerializeField] private int _count;
     [SerializeField] private Text _counter;
     private GameObject _previousCountObject;
+
+    private int timer = 0;
 
     private void Awake()
     {
@@ -35,23 +40,27 @@ public class PlayerBehaviour : MonoBehaviour
         maxHealth = health;
     }
 
+    /*
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == 8)
-            isGrounded = true;
+            isGrounded++;
     }
 
     private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.layer == 8)
-            isGrounded = false;
+            isGrounded--;
     }
+    */
 
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.layer == 9)
         {
             SetDamage(10);
+            timer = 10;
+            speedForward -= 10f;
         }
     }
 
@@ -77,8 +86,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     protected void Jump()
     {      
-        //OnCollisionStay()
-        if(isGrounded)
+        if(jumpChecker.isGrounded >0)
         {
             rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
         }
@@ -86,6 +94,14 @@ public class PlayerBehaviour : MonoBehaviour
 
     protected void Moving()
     {
+        if (timer > 0)
+        {
+            timer--;
+            speedForward += 1f;
+        }
+        
+
+        if (_count % 10 == 0) speedForward += 2f;
         Vector3 movingForward = transform.forward * speedForward * Time.fixedDeltaTime;
         Vector3 movingHorizontal = transform.right * horizontalInput * speedRight * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movingForward + movingHorizontal);
@@ -99,6 +115,8 @@ public class PlayerBehaviour : MonoBehaviour
         myHealth -= damage;
         health -= damage;
         healthBar.UpdateHealthBar();
+
+        if (health <= 0) UnityEditor.EditorApplication.isPaused = true;
     }
 
     private void FallingDown()
