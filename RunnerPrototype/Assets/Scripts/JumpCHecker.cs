@@ -6,7 +6,7 @@ public class JumpCHecker : MonoBehaviour
 {
     public int isGrounded = 0;
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == 8)
             isGrounded++;

@@ -30,7 +30,6 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private Text _counter;
     private GameObject _previousCountObject;
 
-    private int timer = 0;
 
     private void Awake()
     {
@@ -59,8 +58,8 @@ public class PlayerBehaviour : MonoBehaviour
         if (collision.gameObject.layer == 9)
         {
             SetDamage(10);
-            timer = 10;
-            speedForward -= 10f;
+            if (speedForward >= 6f)
+            speedForward -= 5f;
         }
     }
 
@@ -94,14 +93,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     protected void Moving()
     {
-        if (timer > 0)
-        {
-            timer--;
-            speedForward += 1f;
-        }
-        
-
-        if (_count % 10 == 0) speedForward += 2f;
+        if (_count % 11 == 0) speedForward += 1f;
         Vector3 movingForward = transform.forward * speedForward * Time.fixedDeltaTime;
         Vector3 movingHorizontal = transform.right * horizontalInput * speedRight * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movingForward + movingHorizontal);
