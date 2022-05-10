@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Here we get commands from old input system
 public class OldPlayerInputSystem : PlayerBehaviour
 {   
     private void FixedUpdate()

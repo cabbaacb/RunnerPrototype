@@ -1,69 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerBehaviour : MonoBehaviour
 {
-    [SerializeField] [Range(0f, 1000f)] private float speedForward = 5f;
+    [SerializeField] [Range(0f, 25f)] private float speedForward = 5f;
+    [SerializeField] [Range(0f, 25f)] private float maximumSpeedForward = 15f;
     [SerializeField] [Range(1f, 25f)] private float speedRight = 5f;
     [SerializeField] [Range(5f, 50f)] private float speedJump = 10f;
 
-   
-
     [SerializeField] private Rigidbody rb;
+    [SerializeField] protected UIScript _UI;
 
     protected float horizontalInput;
-    //protected int isGrounded;
 
-    
+    private float maxHealth = 100f;
+    private float health = 100f;
 
-    private float myHealth = 100f;
+     private int _count;
 
-    [Min(1f)] public float health;
-    [Min(5f)] public float maxHealth;
-    [SerializeField] private HealthBarScript healthBar;
-
-    [SerializeField] private int _count;
-    [SerializeField] private Text _counter;
     private GameObject _previousCountObject;
 
     private int isGrounded;
+
+    private float time = 0f;
+    [SerializeField] private float _endTime = 10f;
 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        health = myHealth;
-        maxHealth = health;
+        _UI.EndTime = _endTime; //here we set lenght of our game for UI
     }
 
-    /*
-    private void OnCollisionEnter(Collision collision)
+    private void Start()
     {
-        if (collision.gameObject.layer == 8)
-            isGrounded++;
+        StartCoroutine(SpeedUp(1));
+        
     }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.layer == 8)
-            isGrounded--;
-    }
-    */
-
+    //if player bumps in any object, which can deal damage, he recieve it, and his speed resets
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.layer == 9)
         {
             SetDamage(10);
-            if (speedForward >= 6f)
-            speedForward -= 5f;
+            speedForward = 5f;
         }
     }
 
+    //if our player leaves a row of tiles, game count increases
     private void OnTriggerExit(Collider collision)
     {
         if (collision.gameObject.layer == 10)
@@ -78,17 +65,17 @@ public class PlayerBehaviour : MonoBehaviour
                 {
                     _previousCountObject = collision.gameObject;
                     _count++;
-                    _counter.text = "Count: " + _count;
+                    _UI.UpdateCount(_count);
                 }
             }
         }
     }
 
+    //if player stays on the ground, he can jump
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == 8)
             isGrounded++;
-        Debug.Log(isGrounded);
     }
 
     private void OnCollisionExit(Collision collision)
@@ -99,73 +86,61 @@ public class PlayerBehaviour : MonoBehaviour
 
     protected void Jump()
     {      
-        if(isGrounded >0)
+        if(isGrounded > 0)
         {
             rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
         }
     }
 
+    //constant movement, checking for falling down, and timer, which stops our game when ends
     protected void Moving()
     {
-        if (_count % 11 == 0) speedForward += 1f;
         Vector3 movingForward = transform.forward * speedForward * Time.fixedDeltaTime;
         Vector3 movingHorizontal = transform.right * horizontalInput * speedRight * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movingForward + movingHorizontal);
         FallingDown();
+        time = time + 1 * Time.fixedDeltaTime;
+        _UI.TimerUpdate(time);
+        if (time >= _endTime)
+        {
+            EndGame();
+        }
     }
 
+    //this coroutine increase speed of our player, every second of his existence, unless he moves fast enough
+    private IEnumerator SpeedUp(float increase)
+    {
+        yield return new WaitForSeconds(1f);
+        speedForward += increase;
+        if (speedForward < 15)
+        {
+            StartCoroutine(SpeedUp(1));
+        }
+        else
+        {
+            StartCoroutine(SpeedUp(0));
+        }
+    }
 
-
+    //here we decrease HP of our player, show this in UI, and stop the game when HP reaches zero
     private void SetDamage(float damage)
     {
-        myHealth -= damage;
         health -= damage;
-        healthBar.UpdateHealthBar();
+        _UI.UpdateHealth(health, maxHealth);
 
-        if (health <= 0) UnityEditor.EditorApplication.isPaused = true;
+        if (health <= 0) EndGame();
     }
 
+    //checking for falling down
     private void FallingDown()
     {
         if (transform.position.y <= -0.5f) SetDamage(1);
     }
 
-
-
-
-
-
-
-
-
-
-    /*
-    [SerializeField][Min(1f)] private float speedForward = 5f;
-    [SerializeField][Min(1f)] private float speedJump = 1f;
-
-    private Rigidbody rigidBody;
-
-    private void Awake()
+    //shows the message and stops the game
+    private void EndGame()
     {
-        rigidBody = GetComponent<Rigidbody>();
-
-        StartCoroutine(MovingForward());
+        _UI.EndGameText();
+        UnityEditor.EditorApplication.isPaused = true;
     }
-
-    protected void Jump()
-    {
-        rigidBody.AddForce(transform.up * speedJump, ForceMode.Impulse);
-    }
-    private IEnumerator MovingForward()
-    {
-        while(true)
-        {
-            rigidBody.velocity += Vector3.forward * speedForward * Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-            
-            //transform.position += Vector3.forward * speedForward * Time.deltaTime;
-
-            //yield return null;
-        }
-    }*/
 }

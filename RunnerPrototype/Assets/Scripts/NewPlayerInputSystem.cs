@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Here we get commands from new input system
 public class NewPlayerInputSystem : PlayerBehaviour
 {
     private MovingControls movingcontrols;
@@ -9,7 +10,6 @@ public class NewPlayerInputSystem : PlayerBehaviour
     private void Awake()
     {
         movingcontrols = new MovingControls();
-        maxHealth = health;
 
         movingcontrols.Player.Jumping.performed += _ => Jump();
     }

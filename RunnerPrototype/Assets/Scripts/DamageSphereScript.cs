@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//this script moves damaging spheres
 public class DamageSphereScript : MonoBehaviour
 {
     private float speed;
 
     private void Start()
     {
-        speed = Random.Range(2f, 5f);
-        int direction = Random.Range(0, 2);
+        speed = Random.Range(2f, 5f);   //we set random speed
+        int direction = Random.Range(0, 2); //and random direction of movement
         if (direction == 0)
         {
             MoveFromTo(gameObject.transform.position, new Vector3(0f, gameObject.transform.position.y, gameObject.transform.position.z), speed);
@@ -36,6 +37,7 @@ public class DamageSphereScript : MonoBehaviour
         transform.position = endPosition;
     }
 
+    //i was a bit lazy, so i just copypasted coroutine and reversed movement points to change direction
     private IEnumerator PingPongWithDelay()
     {
         while (true)
