@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//this class is needed to say LevelManager how far player traveled
 public class ColliderExitScript : MonoBehaviour
 {
     private LevelManager _levelManager;

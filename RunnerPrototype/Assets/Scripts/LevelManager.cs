@@ -14,26 +14,27 @@ public class LevelManager : MonoBehaviour
 
     private Vector3 _spawnRow;
 
-    private int _rowDistance = 2;
-
     private int[,] _arrayOfRoadObjects;
 
-    public int RowDistance
+    private int _rowDistance = 2;
+    public int RowDistance  //we use public property to determine where and when spawn next row
     {
         get { return _rowDistance; }
-        set { _rowDistance = value; ExitFromCollider(); }
+        set { _rowDistance = value; SpawnRow(); }
     }
 
 
     private void Start()
     {
         _arrayOfRoadObjects = new int[5, 2];
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)    //here we spawn a first few rows of the road
         {
             SpawnRow();
         }
     }
 
+    //this is a simple procedural generation of a road
+    //here we determine elements of one row of it
     private void DetermineRow()
     {
         for (int i = 0; i < _arrayOfRoadObjects.GetLength(0); i++)
@@ -46,6 +47,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    //here we spawn walls and row of tiles, at coordinates in the end of previous row
     private void SpawnRow()
     {
         DetermineRow();
@@ -65,9 +67,12 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    //here we spawn individual tiles
     private void SpawnTile(Vector3 position, bool setNextRow, int numberInRow)
     {
         GameObject tile = Instantiate(_groundTile, position, Quaternion.identity, gameObject.transform);
+
+        //and set what objects they will has
         if (_arrayOfRoadObjects[numberInRow, 0] == 0)
         {
             tile.transform.GetChild(2).gameObject.SetActive(false);
@@ -90,10 +95,5 @@ public class LevelManager : MonoBehaviour
         {
             _spawnRow = tile.transform.GetChild(0).transform.position;
         }
-    }
-
-    private void ExitFromCollider()
-    {
-        SpawnRow();
     }
 }

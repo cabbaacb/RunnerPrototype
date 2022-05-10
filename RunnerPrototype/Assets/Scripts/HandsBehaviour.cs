@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//this script suuposedly should move hands of our guy
 public class HandsBehaviour : MonoBehaviour
 {
    
