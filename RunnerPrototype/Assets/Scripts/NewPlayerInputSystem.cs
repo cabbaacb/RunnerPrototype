@@ -9,6 +9,7 @@ public class NewPlayerInputSystem : PlayerBehaviour
     private void Awake()
     {
         movingcontrols = new MovingControls();
+        maxHealth = health;
 
         movingcontrols.Player.Jumping.performed += _ => Jump();
     }

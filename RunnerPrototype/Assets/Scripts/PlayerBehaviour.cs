@@ -24,11 +24,12 @@ public class PlayerBehaviour : MonoBehaviour
     [Min(1f)] public float health;
     [Min(5f)] public float maxHealth;
     [SerializeField] private HealthBarScript healthBar;
-    [SerializeField] private JumpCHecker jumpChecker;
 
     [SerializeField] private int _count;
     [SerializeField] private Text _counter;
     private GameObject _previousCountObject;
+
+    private int isGrounded;
 
 
     private void Awake()
@@ -83,9 +84,22 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 8)
+            isGrounded++;
+        Debug.Log(isGrounded);
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == 8)
+            isGrounded--;
+    }
+
     protected void Jump()
     {      
-        if(jumpChecker.isGrounded >0)
+        if(isGrounded >0)
         {
             rb.AddForce(transform.up * speedJump, ForceMode.Impulse);
         }
